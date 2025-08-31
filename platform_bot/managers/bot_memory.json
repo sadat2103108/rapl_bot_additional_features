@@ -1,0 +1,49 @@
+{
+  "tgAdmins": [
+    5263826335
+  ],
+  "tfcData": [
+    {
+      "dateTime": "2025-07-02T11:35:00.000Z",
+      "done": true
+    },
+    {
+      "dateTime": "2025-07-26T11:30:00.000Z",
+      "done": true
+    },
+    {
+      "dateTime": "2025-08-05T09:00:00.000Z",
+      "done": true
+    },
+    {
+      "dateTime": "2025-08-30T09:35:00.000Z",
+      "done": true
+    },
+    {
+      "dateTime": "2025-09-01T09:00:00.000Z",
+      "done": false
+    },
+    {
+      "dateTime": "2025-09-03T11:30:00.000Z",
+      "done": false
+    },
+    {
+      "dateTime": "2025-09-10T11:30:00.000Z",
+      "done": false
+    },
+    {
+      "dateTime": "2025-09-04T09:00:00.000Z",
+      "done": false
+    }
+  ],
+  "tfcEvents": [
+    "06rb20rdfdn5l5hhgkbup4caf4",
+    "8gre7gfg5u64sc42nhsoo42rnc",
+    "9utnn277r2g4fcgo32iukh8lc4",
+    "pnlbnp45dt0alg1me6ovt7314k",
+    "pkn8oib821pb3g9u8ua8tpqre4",
+    "6qpv9iqdevjsu0mrcse8t208lg",
+    "094lhvu11l7td7tetu7ir84pt8",
+    "t00kfo6jpuulprub7mr4ros0mc"
+  ]
+}
