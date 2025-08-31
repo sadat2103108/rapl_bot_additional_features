@@ -114,7 +114,7 @@ async function rescheduleTFC(sl, dateStr) {
         await updateTFC();
         const message = `TFC Rescheduled. ‼️\nThe TFC on ${formatDhakaDate(prevDate)} has been rescheduled to ${formatDhakaDate(newDate)}`;
 
-        return message;     
+        return message;
     } else {
         throw new Error("Invalid TFC serial number");
     }
@@ -143,9 +143,53 @@ function getTFC() {
 }
 
 
+
+// Returns a reminder string for the next upcoming TFC
+function reminderTFC() {
+    const now = new Date(); // current UTC
+
+    // console.log(parseDhakaDate(now));
+    
+
+    // Find next upcoming TFC (not done)
+    const upcoming = bot_memory.tfcData
+        .filter(tfc => !tfc.done && new Date(tfc.dateTime) > now)
+        .sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime))[0];
+
+    if (!upcoming) return "✅ No upcoming TFCs scheduled.";
+
+    // console.log(upcoming);
+    
+    // Convert UTC date to Dhaka time (GMT+6)
+    const dhakaDate = new Date(upcoming.dateTime);
+    
+    // console.log(dhakaDate);
+    // dhakaDate.setHours(dhakaDate.getHours() + 6);
+
+    // Format date
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateStr = dhakaDate.toLocaleDateString('en-US', options);
+
+    // Format time in 12-hour AM/PM
+    let hours = dhakaDate.getHours();
+    const minutes = dhakaDate.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+
+    const timeStr = `${hours}:${minutes} ${ampm}`;
+
+    const message =  `⏰ Reminder! There is a TFC scheduled on ${dateStr} at ${timeStr}`;
+
+    return message;
+}
+
+
+
+
 module.exports = {
     addTFC,
     deleteTFC,
     rescheduleTFC,
-    getTFC
+    getTFC,
+    reminderTFC
 };

@@ -1,10 +1,11 @@
 const { sendToDiscord } = require("../managers/discordManager");
 const { sendToTelegram } = require("../managers/telegramManager");
-const { addTFC, deleteTFC, rescheduleTFC, getTFC } = require("../managers/tfcManager");
+const { addTFC, deleteTFC, rescheduleTFC, getTFC, reminderTFC } = require("../managers/tfcManager");
 // const { addEvent } = require("../managers/calendarManager");
 const { addAdmin, removeAdmin, isAdmin } = require("../managers/telegramAdminManager");
 
 const DC_ANNONCEMENT_ID = process.env.DISCORD_ANNOUNCEMENT_CHANNEL_ID;
+const DC_TFC_ID = process.env.DISCORD_TFC_CHANNEL_ID;
 
 async function processCommand(platform, command, args, context, reply, senderID) {
 
@@ -68,7 +69,7 @@ async function processCommand(platform, command, args, context, reply, senderID)
 
       
       if(message){
-        sendToDiscord(DC_ANNONCEMENT_ID, `📢 ${message}`);
+        sendToDiscord(DC_TFC_ID, `📢 ${message}`);
         sendToTelegram(`📢 ${message}`);
         reply("Announcement Sent:\n"+ message );
       }
@@ -92,6 +93,20 @@ async function processCommand(platform, command, args, context, reply, senderID)
     }
     return;
   }
+
+  if (command === "remtfc") {
+    try {
+      const message = reminderTFC(); 
+      sendToDiscord(DC_TFC_ID, message);
+      sendToTelegram(message);
+      reply(`✅ reminder sent to Discord & Telegram`);
+    } catch (err) {
+      reply("❌ Failed to fetch TFC reminder.");
+    }
+    return;
+  }
+
+
 
   /////////////////////////////////////////////////////////////
 
