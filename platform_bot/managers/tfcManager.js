@@ -26,20 +26,20 @@ function getCurrentTime() {
 
     // Format to match "2025-07-26T17:30:00+06:00"
     const formattedNow = nowDhaka.toISOString().replace("Z", "+06:00");
-    return formattedNow;
+    return new Date(formattedNow);
 }
 
 // Update TFC: sort, mark done, sync Google Calendar
 async function updateTFC() {
     const now = getCurrentTime();
 
-    // 1️⃣ Sort tfcData by dateTime
-    bot_memory.tfcData.sort((a, b) => {
+    // 1️⃣ Sort tfcDates by dateTime
+    bot_memory.tfcDates.sort((a, b) => {
         return new Date(a.dateTime) - new Date(b.dateTime);
     });
 
     // 2️⃣ Mark past events as done
-    bot_memory.tfcData.forEach(event => {
+    bot_memory.tfcDates.forEach(event => {
         if (event.dateTime < now) event.done = true;
     });
 
@@ -53,11 +53,11 @@ async function updateTFC() {
     bot_memory.tfcEvents = [];
 
     // 5️⃣ Create new Google Calendar events for future TFCs
-    for (let i = 0; i < bot_memory.tfcData.length; i++) {
-        const tfc = bot_memory.tfcData[i];
-        // if (tfc.done) continue; // skip past events
+    for (let i = 0; i < bot_memory.tfcDates.length; i++) {
+        const date = bot_memory.tfcDates[i];
+        // if (date.done) continue; // skip past events
 
-        const startTime = new Date(tfc.dateTime);
+        const startTime = new Date(date);
 
         const endTime = new Date(startTime.getTime() + 3 * 60 * 60 * 1000);
 
@@ -69,7 +69,7 @@ async function updateTFC() {
             startTime,
             endTime,
             description: "",
-            location: ""
+            location: "RAPL, 201, 202"
         });
 
         bot_memory.tfcEvents.push(event.id);
@@ -82,15 +82,15 @@ async function updateTFC() {
 // Add a new TFC from string input
 async function addTFC(dateStr) {
     const date = parseDhakaDate(dateStr);
-    bot_memory.tfcData.push({ dateTime: date, done: false });
+    bot_memory.tfcDates.push(date);
     await updateTFC();
 }
 
 // Delete TFC by serial number (1-based index)
 async function deleteTFC(sl) {
     const index = sl - 1;
-    if (index >= 0 && index < bot_memory.tfcData.length) {
-        bot_memory.tfcData.splice(index, 1);
+    if (index >= 0 && index < bot_memory.tfcDates.length) {
+        bot_memory.tfcDates.splice(index, 1);
         await updateTFC();
     } else {
         console.error("Invalid TFC index");
@@ -117,24 +117,21 @@ function readableDateDhaka(dateStr) {
     // Format the date
     const formatted = new Intl.DateTimeFormat("en-US", options).format(date);
 
-    return formatted ;
+    return formatted;
 }
 
 
 // Reschedule TFC by serial number
 async function rescheduleTFC(sl, dateStr) {
     const index = sl - 1;
-    if (index >= 0 && index < bot_memory.tfcData.length) {
-        const prevDate = bot_memory.tfcData[index].dateTime;
+    if (index >= 0 && index < bot_memory.tfcDates.length) {
+        const prevDate = bot_memory.tfcDates[index];
         const newDate = parseDhakaDate(dateStr);
 
-        console.log("datestr", dateStr);
-        console.log("newDate", newDate);
-        
-        
+        // console.log("datestr", dateStr);
+        // console.log("newDate", newDate);
 
-        bot_memory.tfcData[index].dateTime = newDate;
-        bot_memory.tfcData[index].done = false;
+        bot_memory.tfcDates[index] = newDate;
 
         await updateTFC();
         const prev = readableDateDhaka(prevDate).split(",").slice(0, 2);
@@ -150,8 +147,8 @@ async function rescheduleTFC(sl, dateStr) {
 // Get formatted TFC list for display
 function getTFC() {
     updateTFC();
-    return bot_memory.tfcData.map((item, index) => {
-        const dateObj = new Date(item.dateTime); // <-- correct key
+    return bot_memory.tfcDates.map((tfcDate, index) => {
+        const dateObj = new Date(tfcDate); // <-- correct key
         if (isNaN(dateObj)) return `TFC${index + 1}: Invalid date`;
 
         const day = dateObj.toLocaleString("en-US", { weekday: "long", timeZone: "Asia/Dhaka" });
@@ -162,10 +159,15 @@ function getTFC() {
             hour12: true,
             timeZone: "Asia/Dhaka"
         });
+        const now = getCurrentTime();
+        const status = (dateObj.getTime() < now.getTime()) ? "done" : "upcoming";
 
-        const status = item.done ? "done" : "upcoming";
+        const tfcInfo = `**TFC${index + 1}** — ${day}, **${date}** at ${time}`;
 
-        return `TFC${index + 1}, ${day}, ${date} at ${time}. [${status}]`;
+        if (status === "done") return `${tfcInfo}/d`;
+        return `${tfcInfo}/u`;
+
+
     });
 }
 
@@ -173,41 +175,27 @@ function getTFC() {
 
 // Returns a reminder string for the next upcoming TFC
 function reminderTFC() {
-    const now = new Date(); // current UTC
+    const now = getCurrentTime();
 
-    // console.log(parseDhakaDate(now));
+    for (let i = 0; i < bot_memory.tfcDates.length; i++) {
+        const date = bot_memory.tfcDates[i];
+        const dateObj = new Date(date);
+
+        if (dateObj.getTime() > now.getTime()) {
+            const dateTxt = readableDateDhaka(date);
+            const message =`⏰ **TFC Reminder‼️**\n\nHey everyone, a TFC is coming up on:\n\n📅 **${dateTxt}**\n`;
+            
+            return message;
+
+        }
+    }
+
+    return '';
 
 
-    // Find next upcoming TFC (not done)
-    const upcoming = bot_memory.tfcData
-        .filter(tfc => !tfc.done && new Date(tfc.dateTime) > now)
-        .sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime))[0];
 
-    if (!upcoming) return "✅ No upcoming TFCs scheduled.";
 
-    // console.log(upcoming);
 
-    // Convert UTC date to Dhaka time (GMT+6)
-    const dhakaDate = new Date(upcoming.dateTime);
-
-    // console.log(dhakaDate);
-    // dhakaDate.setHours(dhakaDate.getHours() + 6);
-
-    // Format date
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const dateStr = dhakaDate.toLocaleDateString('en-US', options);
-
-    // Format time in 12-hour AM/PM
-    let hours = dhakaDate.getHours();
-    const minutes = dhakaDate.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12;
-
-    const timeStr = `${hours}:${minutes} ${ampm}`;
-
-    const message = `⏰ Reminder! There is a TFC scheduled on ${dateStr} at ${timeStr}`;
-
-    return message;
 }
 
 

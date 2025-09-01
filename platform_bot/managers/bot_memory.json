@@ -2,48 +2,26 @@
   "tgAdmins": [
     5263826335
   ],
-  "tfcData": [
-    {
-      "dateTime": "2025-07-02T17:35:00+06:00",
-      "done": true
-    },
-    {
-      "dateTime": "2025-07-26T17:30:00+06:00",
-      "done": true
-    },
-    {
-      "dateTime": "2025-08-05T15:00:00+06:00",
-      "done": true
-    },
-    {
-      "dateTime": "2025-08-30T15:35:00+06:00",
-      "done": true
-    },
-    {
-      "dateTime": "2025-09-02T17:30:00+06:00",
-      "done": false
-    },
-    {
-      "dateTime": "2025-09-03T17:30:00+06:00",
-      "done": false
-    },
-    {
-      "dateTime": "2025-09-04T15:00:00+06:00",
-      "done": false
-    },
-    {
-      "dateTime": "2025-09-10T17:30:00+06:00",
-      "done": false
-    }
+  "tfcDates": [
+    "2025-07-02T17:35:00+06:00",
+    "2025-07-26T17:30:00+06:00",
+    "2025-08-05T15:00:00+06:00",
+    "2025-08-30T15:35:00+06:00",
+    "2025-09-01T15:00:00+06:00",
+    "2025-09-03T17:30:00+06:00",
+    "2025-09-04T15:00:00+06:00",
+    "2025-09-06T15:00:00+06:00",
+    "2025-09-10T15:00:00+06:00"
   ],
   "tfcEvents": [
-    "hrvvg47c3eo7ojdo73g3ngj4qg",
-    "hi14ivi1iduq5i96f90h25mvs4",
-    "vm04vi6948jn75686160p3klcg",
-    "ar0g6nhi8lgcut8ubhko3e5srs",
-    "p1i4gittl5i2otn3i2s5tvgnb4",
-    "5f4486is2kg7g2oskipp789ia0",
-    "5gnfopmahjothc5f8hn9kl5ek0",
-    "akg4t0qgunhk4r1ctju1r40ol0"
+    "ajvi04a2taaead8l4bkjfa6ads",
+    "i4bfj15lou5jhir7tukl1kj6g4",
+    "5uvq1qv0vshukbqn4kf98o7bis",
+    "9hjf6pq94pkenk57l0rhsgrfnc",
+    "cfn7h8krieqlhi0lj0qa6fu62o",
+    "t0qdk4bq8a739adlavk3i3er28",
+    "s0hjsbsgcestqlct3oehee1ie4",
+    "i5748ju5bg13o4aepjqfdoksc4",
+    "7ctes63471g4pmg6gmgkldife0"
   ]
 }
