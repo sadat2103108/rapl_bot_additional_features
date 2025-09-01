@@ -1,21 +1,22 @@
 const { sendToDiscord } = require("../managers/discordManager");
 const { sendToTelegram } = require("../managers/telegramManager");
 const { addTFC, deleteTFC, rescheduleTFC, getTFC, reminderTFC } = require("../managers/tfcManager");
-// const { addEvent } = require("../managers/calendarManager");
+
 const { addAdmin, removeAdmin, isAdmin } = require("../managers/telegramAdminManager");
 
 const DC_ANNONCEMENT_ID = process.env.DISCORD_ANNOUNCEMENT_CHANNEL_ID;
 const DC_TFC_ID = process.env.DISCORD_TFC_CHANNEL_ID;
 
-async function processCommand(platform, command, args, context, reply, senderID) {
 
-  // 📢 Announcement
-  if (command === "ann") {
+async function processCommand(platform, command, args, context, reply, senderID) {
+  
+  // Announcement
+  if (command === "broadcast") {
     const message = args.join(" ");
     if (!message) return reply("⚠️ Please provide a message.");
 
-    sendToDiscord(DC_ANNONCEMENT_ID, `📢 ${message}`);
-    sendToTelegram(`📢 ${message}`);
+    sendToDiscord(DC_ANNONCEMENT_ID, message);
+    sendToTelegram(message);
     reply(`✅ Announcement sent to Discord & Telegram`);
     return;
   }
@@ -69,8 +70,8 @@ async function processCommand(platform, command, args, context, reply, senderID)
 
       
       if(message){
-        sendToDiscord(DC_TFC_ID, `📢 ${message}`);
-        sendToTelegram(`📢 ${message}`);
+        sendToDiscord(DC_TFC_ID, message);
+        sendToTelegram(message);
         reply("Announcement Sent:\n"+ message );
       }
 
@@ -83,7 +84,7 @@ async function processCommand(platform, command, args, context, reply, senderID)
 
   if (command === "deltfc") {
     // args example: ["2"]
-    if (!args[0]) return reply("⚠️ Usage: delTFC <serial>");
+    if (!args[0]) return reply("⚠️ Usage: deltfc <serial>");
     const sl = Number(args[0]);
     try {
       await deleteTFC(sl);

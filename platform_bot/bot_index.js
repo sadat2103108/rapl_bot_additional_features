@@ -1,4 +1,4 @@
-require("dotenv").config();
+
 const { initDiscordManager } = require("./managers/discordManager");
 const { initTelegramManager } = require("./managers/telegramManager");
 const { processCommand } = require("./commands/processCommands");
@@ -13,7 +13,7 @@ function initPlatformBot() {
   // Initialize Telegram manager with shared command handler
   initTelegramManager(processCommand);
 
-  console.log("🚀 Platform Bot initialized: Discord + Telegram");
+  console.log("Platform Bot initialized: Discord + Telegram");
 }
 
 // Export the init function for seamless integration
