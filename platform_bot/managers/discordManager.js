@@ -38,7 +38,10 @@ async function sendToDiscord(channelId, message) {
     // console.log(channel);
     
     if (!channel) throw new Error("Channel not found");
-    await channel.send(message);
+
+    // await channel.send(message);
+    await channel.send(`@everyone \n\n> ${message.replace(/\n/g, "\n> ")}`);
+
   } catch (err) {
     console.error(`Discord send error for channel ${channelId}:`, err.message);
   }

@@ -128,15 +128,17 @@ async function rescheduleTFC(sl, dateStr) {
         const prevDate = bot_memory.tfcDates[index];
         const newDate = parseDhakaDate(dateStr);
 
-        // console.log("datestr", dateStr);
-        // console.log("newDate", newDate);
 
         bot_memory.tfcDates[index] = newDate;
 
         await updateTFC();
         const prev = readableDateDhaka(prevDate).split(",").slice(0, 2);
         const cur = readableDateDhaka(newDate);
-        const message = `‼️TFC Rescheduled‼️\nThe TFC on ${prev} has been \nrescheduled to => ${cur}`;
+        const message =
+            `⚠️‼️ **TFC Rescheduled**\n\n` +
+            `An upcoming TFC has been moved to a different date or time..\n\n`+
+            `❌ **Previusly on: ** ${prev}\n\n` +
+            `✅ **Rescheduled To: ** ${cur}`;
 
         return message;
     } else {
@@ -144,31 +146,50 @@ async function rescheduleTFC(sl, dateStr) {
     }
 }
 
-// Get formatted TFC list for display
-function getTFC() {
-    updateTFC();
-    return bot_memory.tfcDates.map((tfcDate, index) => {
-        const dateObj = new Date(tfcDate); // <-- correct key
-        if (isNaN(dateObj)) return `TFC${index + 1}: Invalid date`;
+
+
+function getTFC(refresh = true) {
+    if (refresh) updateTFC();
+    const now = getCurrentTime();
+
+    let past = [];
+    let upcoming = [];
+
+    bot_memory.tfcDates.forEach((tfcDate, index) => {
+        const dateObj = new Date(tfcDate);
+        if (isNaN(dateObj)) {
+            upcoming.push(`**TFC${index + 1}** — Invalid date`);
+            return;
+        }
 
         const day = dateObj.toLocaleString("en-US", { weekday: "long", timeZone: "Asia/Dhaka" });
-        const date = dateObj.toLocaleDateString("en-US", { timeZone: "Asia/Dhaka", month: "long", day: "numeric", year: "numeric" });
+        const date = dateObj.toLocaleDateString("en-US", {
+            timeZone: "Asia/Dhaka",
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        });
         const time = dateObj.toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",
             hour12: true,
             timeZone: "Asia/Dhaka"
         });
-        const now = getCurrentTime();
-        const status = (dateObj.getTime() < now.getTime()) ? "done" : "upcoming";
 
         const tfcInfo = `**TFC${index + 1}** — ${day}, **${date}** at ${time}`;
 
-        if (status === "done") return `${tfcInfo}/d`;
-        return `${tfcInfo}/u`;
-
-
+        if (dateObj.getTime() < now.getTime()) {
+            past.push(tfcInfo);
+        } else {
+            upcoming.push(tfcInfo);
+        }
     });
+
+    const message =
+        `📌 **Past TFCs**\n${past.join("\n") || "None"}\n\n` +
+        `📌 **Upcoming TFCs**\n${upcoming.join("\n") || "None"}`;
+
+    return message;
 }
 
 
@@ -183,19 +204,23 @@ function reminderTFC() {
 
         if (dateObj.getTime() > now.getTime()) {
             const dateTxt = readableDateDhaka(date);
-            const message =`⏰ **TFC Reminder‼️**\n\nHey everyone, a TFC is coming up on:\n\n📅 **${dateTxt}**\n`;
-            
-            return message;
 
+            // calculate hours + minutes remaining
+            const diffMs = dateObj.getTime() - now.getTime();
+            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+            const message =
+                `⏰ **TFC Reminder‼️**\n\n` +
+                `Hey everyone, a TFC is coming up on:\n\n` +
+                `📅 **${dateTxt}**\n` +
+                `⏳ **${hours} hours ${minutes} minutes remaining!**`;
+
+            return message;
         }
     }
 
     return '';
-
-
-
-
-
 }
 
 
