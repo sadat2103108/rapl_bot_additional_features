@@ -4,7 +4,7 @@ const { addTFC, deleteTFC, rescheduleTFC, getTFC, reminderTFC } = require("../ma
 
 const { addAdmin, removeAdmin, isAdmin } = require("../managers/telegramAdminManager");
 
-// const DC_ANNONCEMENT_ID = process.env.DISCORD_ANNOUNCEMENT_CHANNEL_ID;
+const DC_ANNONCEMENT_ID = process.env.DISCORD_ANNOUNCEMENT_CHANNEL_ID;
 const DC_TFC_ID = process.env.DISCORD_TFC_CHANNEL_ID;
 
 
@@ -52,6 +52,17 @@ async function processCommand(platform, command, args, context, reply, senderID)
   
 
   // Announcement
+
+  if (command === "ann") {
+    const message = args.join(" ");
+    if (!message) return reply("⚠️ Please provide a message.");
+
+    sendToDiscord(DC_ANNONCEMENT_ID, message);
+    sendToTelegram(message);
+    reply(`✅ Announcement sent to Discord & Telegram`);
+    return;
+  }
+
   if (command === "msgtfc") {
     const message = args.join(" ");
     if (!message) return reply("⚠️ Please provide a message.");
