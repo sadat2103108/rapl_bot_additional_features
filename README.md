@@ -1,6 +1,8 @@
+These are additional features to be integrated in the main RAPL BOT of Shuvo Malakar Bhai....
+
 # Project Integration Guide
 
-This guide will help you integrate the **platform bot** into your Node.js project.
+This guide will help you integrate the **platform bot** in the main Node.js bot project.
 
 ---
 
